@@ -4,14 +4,17 @@ import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { LoginView } from "../login-view/login-view";
 import { SignupView } from "../signup-view/signup-view";
+import Button from "react-bootstrap/Button";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 export const MainView = () => {
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const storedToken = localStorage.getItem("token");
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [movies, setMovies] = useState([]);
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
+  const [user, setUser] = useState(storedUser ? storedUser : null);
+  const [token, setToken] = useState(storedToken ? storedToken : null);
 
   useEffect(() => {
     if (!token) {
@@ -26,6 +29,7 @@ export const MainView = () => {
         const moviesFromApi = data.map((movie) => {
           return {
             id: movie["_id"],
+            image: movie.ImagePath,
             title: movie.Title,
             genre: movie.Genre.Name,
             director: movie.Director.Name,
@@ -40,55 +44,95 @@ export const MainView = () => {
       });
   }, [token]);
 
-  if (!user) {
-    return (
-      <>
-        <LoginView
-          onLoggedIn={(user, token) => {
-            setUser(user);
-            setToken(token);
-          }}
-        />
-        or
-        <SignupView />
-      </>
-    );
-  }
+  // if (!user) {
+  //   return (
+  //     <>
+  //       <LoginView
+  //         onLoggedIn={(user, token) => {
+  //           setUser(user);
+  //           setToken(token);
+  //         }}
+  //       />
+  //       or
+  //       <SignupView />
+  //     </>
+  //   );
+  // }
 
-  if (selectedMovie) {
-    return (
-      <MovieView
-        movie={selectedMovie}
-        onBackClick={() => setSelectedMovie(null)}
-      />
-    );
-  }
+  // if (selectedMovie) {
+  //   return (
+  //     <MovieView
+  //       movie={selectedMovie}
+  //       onBackClick={() => setSelectedMovie(null)}
+  //     />
+  //   );
+  // }
 
-  if (movies.length === 0) {
-    return <div>The list is empty!</div>;
-  }
+  // if (movies.length === 0) {
+  //   return (
+  //     <div>
+  //       <div>The list is empty!</div>
+  //       <button
+  //         onClick={() => {
+  //           setUser(null);
+  //           setToken(null);
+  //           localStorage.clear();
+  //         }}
+  //       >
+  //         Logout
+  //       </button>
+  //     </div>
+  //   );
+  // }
 
   return (
-    <div>
-      {movies.map((movie) => (
-        <MovieCard
-          key={movie.id}
-          movie={movie}
-          onMovieClick={(newSelectedMovie) => {
-            setSelectedMovie(newSelectedMovie);
-          }}
-        />
-      ))}
-      <button
-        onClick={() => {
-          setUser(null);
-          setToken(null);
-          localStorage.clear();
-        }}
-      >
-        Logout
-      </button>
-    </div>
+    <Row className="justify-content-md-center">
+      {!user ? (
+        <Col md={5}>
+          <LoginView
+            onLoggedIn={(user, token) => {
+              setUser(user);
+              setToken(token);
+            }}
+          />
+          or
+          <SignupView />
+        </Col>
+      ) : selectedMovie ? (
+        <Col md={8}>
+          <MovieView
+            movie={selectedMovie}
+            onBackClick={() => setSelectedMovie(null)}
+          />
+        </Col>
+      ) : movies.length === 0 ? (
+        <div>The list is empty!</div>
+      ) : (
+        <Row>
+          {movies.map((movie) => (
+            <Col key={movie.id} md={4} lg={3} className="mb-4">
+              <MovieCard
+                movie={movie}
+                onMovieClick={(newSelectedMovie) => {
+                  setSelectedMovie(newSelectedMovie);
+                }}
+              />
+            </Col>
+          ))}
+          <Button
+            variant="primary"
+            type="submit"
+            onClick={() => {
+              setUser(null);
+              setToken(null);
+              localStorage.clear();
+            }}
+          >
+            Logout
+          </Button>
+        </Row>
+      )}
+    </Row>
   );
 };
 
