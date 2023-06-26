@@ -25,10 +25,10 @@ export const ProfileView = ({
     event.preventDefault();
 
     const data = {
-      username,
-      password,
-      email,
-      birthdate,
+      Username: username,
+      Password: password,
+      Email: email,
+      Birthday: birthdate,
     };
 
     fetch(`https://cinemate.herokuapp.com/users/${user.Username}`, {
@@ -43,8 +43,7 @@ export const ProfileView = ({
         if (response.ok) {
           return response.json();
         } else {
-          alert("Failed to change user data");
-          return false;
+          throw new Error("Failed to change user data");
         }
       })
       .then((user) => {
@@ -54,25 +53,27 @@ export const ProfileView = ({
         }
       })
       .catch((e) => {
-        alert(e);
+        alert(e.message);
       });
   };
 
   const deleteAccount = () => {
     fetch(`https://cinemate.herokuapp.com/users/${user.Username}`, {
       method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then((response) => {
         if (response.ok) {
           alert("The account has been deleted.");
           onLoggedOut();
         } else {
-          alert("Failed to delete account");
+          throw new Error("Failed to delete account");
         }
       })
       .catch((e) => {
-        alert(e);
+        alert(e.message);
       });
   };
 
