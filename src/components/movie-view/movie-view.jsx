@@ -21,64 +21,59 @@ export const MovieView = ({ movies, user, token, updateUser }) => {
   }, [movieId]);
 
   const addFavorite = () => {
-    if (user && user.Username) {
-      fetch(
-        `https://cinemate.herokuapp.com/users/:${user.Username}/movies/${movieId}`,
-        {
-          method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
+    fetch(
+      `https://cinemate.herokuapp.com/users/${user.Username}/movies/${movieId}`,
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    )
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          alert("Failed");
+          return false;
         }
-      )
-        .then((response) => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            alert("Failed");
-            return false;
-          }
-        })
-        .then((user) => {
-          if (user) {
-            alert("Successfully added to favorites");
-            setIsFavorite(true);
-            updateUser(user);
-            alert("Movie added to favorites");
-          }
-        })
-        .catch((e) => {
-          alert("Failed to add movie to favorites.");
-        });
-    }
+      })
+      .then((user) => {
+        if (user) {
+          alert("Successfully added to favorites");
+          setIsFavorite(true);
+          updateUser(user);
+        }
+      })
+      .catch((e) => {
+        alert(e);
+      });
   };
 
   const removeFavorite = () => {
-    if (user && user.Username) {
-      fetch(
-        `https://cinemate.herokuapp.com/users/${user.Username}/movies/${movieId}`,
-        {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` },
+    fetch(
+      `https://cinemate.herokuapp.com/users/${user.Username}/movies/${movieId}`,
+      {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    )
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          alert("Failed");
+          return false;
         }
-      )
-        .then((response) => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            alert("Failed");
-            return false;
-          }
-        })
-        .then((user) => {
-          if (user) {
-            alert("Successfully deleted from favorites");
-            setIsFavorite(false);
-            updateUser(user);
-          }
-        })
-        .catch((e) => {
-          alert(e);
-        });
-    }
+      })
+      .then((user) => {
+        if (user) {
+          alert("Successfully deleted from favorites");
+          setIsFavorite(false);
+          updateUser(user);
+        }
+      })
+      .catch((e) => {
+        alert(e);
+      });
   };
 
   return (
@@ -92,13 +87,30 @@ export const MovieView = ({ movies, user, token, updateUser }) => {
         <Link to="/">
           <Button variant="link">Back</Button>
         </Link>
-        {isFavorite ? (
+        {/* {isFavorite ? (
           <Button variant="danger" className="mx-2" onClick={removeFavorite}>
             Remove from Favorites
           </Button>
         ) : (
           <Button variant="success" className="mx-2" onClick={addFavorite}>
             Add to Favorites
+          </Button>
+        )} */}
+        {isFavorite ? (
+          <Button
+            variant="danger"
+            className="mt-2 mb-2 ms-2"
+            onClick={removeFavorite}
+          >
+            Remove from favorites
+          </Button>
+        ) : (
+          <Button
+            variant="success"
+            className="mt-2 mb-2 ms-2"
+            onClick={addFavorite}
+          >
+            Add to favorites
           </Button>
         )}
       </Card.Body>
