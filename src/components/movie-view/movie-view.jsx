@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import { Card, Button } from "react-bootstrap";
-import { useParams } from "react-router";
+import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
@@ -8,6 +8,10 @@ export const MovieView = ({ movies, user, token, updateUser }) => {
   const { movieId } = useParams();
 
   const movie = movies.find((m) => m.id === movieId);
+
+  if (!movie) {
+    return <div>Loading...</div>;
+  }
 
   const [isFavorite, setIsFavorite] = useState(
     user && user.FavoriteMovies && user.FavoriteMovies.includes(movie.id)
