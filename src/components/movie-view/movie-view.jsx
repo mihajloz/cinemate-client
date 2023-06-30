@@ -9,10 +9,6 @@ export const MovieView = ({ movies, user, token, updateUser }) => {
 
   const movie = movies.find((m) => m.id === movieId);
 
-  if (!movie) {
-    return <div>Loading...</div>;
-  }
-
   const [isFavorite, setIsFavorite] = useState(
     user && user.FavoriteMovies && user.FavoriteMovies.includes(movie.id)
   );
