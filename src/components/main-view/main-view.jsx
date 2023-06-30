@@ -11,13 +11,16 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { NavigationBar } from "../navigation-bar/navigation-bar";
 import { ProfileView } from "../profile-view/profile-view";
+import FormControl from "react-bootstrap/FormControl";
 
 export const MainView = () => {
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const storedToken = localStorage.getItem("token");
   const [movies, setMovies] = useState([]);
+  const [filteredMovies, setFilteredMovies] = useState(movies);
   const [user, setUser] = useState(storedUser ? storedUser : null);
   const [token, setToken] = useState(storedToken ? storedToken : null);
+  const [loading, setLoading] = useState(true);
 
   const updateUser = (user) => {
     setUser(user);
@@ -46,11 +49,20 @@ export const MainView = () => {
         });
 
         setMovies(moviesFromApi);
+        setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching movies:", error);
+        setLoading(false);
       });
   }, [token]);
+
+  const filterMovies = (query) => {
+    const filtered = movies.filter((movie) =>
+      movie.title.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredMovies(filtered);
+  };
 
   return (
     <BrowserRouter>
@@ -148,7 +160,13 @@ export const MainView = () => {
                   <Col>The list is empty!</Col>
                 ) : (
                   <>
-                    {movies.map((movie) => (
+                    <FormControl
+                      type="text"
+                      placeholder="Search movies..."
+                      onChange={(e) => filterMovies(e.target.value)}
+                      style={{ marginBottom: "20px" }}
+                    />
+                    {filteredMovies.map((movie) => (
                       <Col
                         className="mb-4"
                         key={movie.id}
