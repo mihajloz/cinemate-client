@@ -17,7 +17,6 @@ export const MainView = () => {
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const storedToken = localStorage.getItem("token");
   const [movies, setMovies] = useState([]);
-  const [filteredMovies, setFilteredMovies] = useState(movies);
   const [user, setUser] = useState(storedUser ? storedUser : null);
   const [token, setToken] = useState(storedToken ? storedToken : null);
   const [loading, setLoading] = useState(true);
@@ -61,7 +60,7 @@ export const MainView = () => {
     const filtered = movies.filter((movie) =>
       movie.title.toLowerCase().includes(query.toLowerCase())
     );
-    setFilteredMovies(filtered);
+    setMovies(filtered);
   };
 
   return (
@@ -135,8 +134,6 @@ export const MainView = () => {
               <>
                 {!user ? (
                   <Navigate to="/login" replace />
-                ) : movies.length === 0 ? (
-                  <Col>The list is empty!</Col>
                 ) : (
                   <Col md={8}>
                     <MovieView
@@ -156,8 +153,6 @@ export const MainView = () => {
               <>
                 {!user ? (
                   <Navigate to="/login" replace />
-                ) : movies.length === 0 ? (
-                  <Col>The list is empty!</Col>
                 ) : (
                   <>
                     <FormControl
@@ -166,7 +161,7 @@ export const MainView = () => {
                       onChange={(e) => filterMovies(e.target.value)}
                       style={{ marginBottom: "20px" }}
                     />
-                    {filteredMovies.map((movie) => (
+                    {movies.map((movie) => (
                       <Col
                         className="mb-4"
                         key={movie.id}
