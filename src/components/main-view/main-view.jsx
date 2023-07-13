@@ -47,6 +47,7 @@ export const MainView = () => {
           };
         });
 
+        console.log(moviesFromApi);
         setMovies(moviesFromApi);
         setLoading(false);
       })
@@ -155,34 +156,40 @@ export const MainView = () => {
                   <Navigate to="/login" replace />
                 ) : (
                   <>
-                    <FormControl
-                      type="text"
-                      placeholder="Search movies..."
-                      onChange={(e) => filterMovies(e.target.value)}
-                      style={{ marginBottom: "20px" }}
-                    />
-                    {movies.map((movie) => (
-                      <Col
-                        className="mb-4"
-                        key={movie.id}
-                        xs={12}
-                        md={6}
-                        lg={3}
-                      >
-                        <MovieCard movie={movie} />
-                      </Col>
-                    ))}
-                    <Button
-                      variant="primary"
-                      type="submit"
-                      onClick={() => {
-                        setUser(null);
-                        setToken(null);
-                        localStorage.clear();
-                      }}
-                    >
-                      Logout
-                    </Button>
+                    {loading ? (
+                      <div>Loading movies...</div> // Display loading message
+                    ) : (
+                      <>
+                        <FormControl
+                          type="text"
+                          placeholder="Search movies..."
+                          onChange={(e) => filterMovies(e.target.value)}
+                          style={{ marginBottom: "20px" }}
+                        />
+                        {movies.map((movie) => (
+                          <Col
+                            className="mb-4"
+                            key={movie.id}
+                            xs={12}
+                            md={6}
+                            lg={3}
+                          >
+                            <MovieCard movie={movie} />
+                          </Col>
+                        ))}
+                        <Button
+                          variant="primary"
+                          type="submit"
+                          onClick={() => {
+                            setUser(null);
+                            setToken(null);
+                            localStorage.clear();
+                          }}
+                        >
+                          Logout
+                        </Button>
+                      </>
+                    )}
                   </>
                 )}
               </>
