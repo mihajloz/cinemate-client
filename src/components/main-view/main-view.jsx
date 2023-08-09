@@ -11,6 +11,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { NavigationBar } from "../navigation-bar/navigation-bar";
 import { ProfileView } from "../profile-view/profile-view";
+import FormControl from "react-bootstrap/FormControl";
 
 export const MainView = () => {
   const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -18,6 +19,7 @@ export const MainView = () => {
   const [movies, setMovies] = useState([]);
   const [user, setUser] = useState(storedUser ? storedUser : null);
   const [token, setToken] = useState(storedToken ? storedToken : null);
+  const [loading, setLoading] = useState(true);
 
   const updateUser = (user) => {
     setUser(user);
@@ -45,12 +47,22 @@ export const MainView = () => {
           };
         });
 
+        console.log(moviesFromApi);
         setMovies(moviesFromApi);
+        setLoading(false);
       })
       .catch((error) => {
         console.error("Error fetching movies:", error);
+        setLoading(false);
       });
   }, [token]);
+
+  const filterMovies = (query) => {
+    const filtered = movies.filter((movie) =>
+      movie.title.toLowerCase().includes(query.toLowerCase())
+    );
+    setMovies(filtered);
+  };
 
   return (
     <BrowserRouter>
@@ -123,8 +135,6 @@ export const MainView = () => {
               <>
                 {!user ? (
                   <Navigate to="/login" replace />
-                ) : movies.length === 0 ? (
-                  <Col>The list is empty!</Col>
                 ) : (
                   <Col md={8}>
                     <MovieView
@@ -144,32 +154,42 @@ export const MainView = () => {
               <>
                 {!user ? (
                   <Navigate to="/login" replace />
-                ) : movies.length === 0 ? (
-                  <Col>The list is empty!</Col>
                 ) : (
                   <>
-                    {movies.map((movie) => (
-                      <Col
-                        className="mb-4"
-                        key={movie.id}
-                        xs={12}
-                        md={6}
-                        lg={3}
-                      >
-                        <MovieCard movie={movie} />
-                      </Col>
-                    ))}
-                    <Button
-                      variant="primary"
-                      type="submit"
-                      onClick={() => {
-                        setUser(null);
-                        setToken(null);
-                        localStorage.clear();
-                      }}
-                    >
-                      Logout
-                    </Button>
+                    {loading ? (
+                      <div>Loading movies...</div> // Display loading message
+                    ) : (
+                      <>
+                        <FormControl
+                          type="text"
+                          placeholder="Search movies..."
+                          onChange={(e) => filterMovies(e.target.value)}
+                          style={{ marginBottom: "20px" }}
+                        />
+                        {movies.map((movie) => (
+                          <Col
+                            className="mb-4"
+                            key={movie.id}
+                            xs={12}
+                            md={6}
+                            lg={3}
+                          >
+                            <MovieCard movie={movie} />
+                          </Col>
+                        ))}
+                        <Button
+                          variant="primary"
+                          type="submit"
+                          onClick={() => {
+                            setUser(null);
+                            setToken(null);
+                            localStorage.clear();
+                          }}
+                        >
+                          Logout
+                        </Button>
+                      </>
+                    )}
                   </>
                 )}
               </>
